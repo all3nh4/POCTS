@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Subscribe to Alerts</title>
+</head>
+<body>
+    <h2>Subscribe to Trend Alerts</h2>
+    <form action="/alerts/setup" method="post">
+        <label for="email">Email:</label><br>
+        <input type="email" id="email" name="email" required><br>
+        <label for="trend_keyword">Trend Keyword:</label><br>
+        <input type="text" id="trend_keyword" name="trend_keyword" required><br>
+        <label for="frequency">Frequency:</label><br>
+        <select id="frequency" name="frequency">
+            <option value="daily">Daily</option>
+            <option value="weekly">Weekly</option>
+            <option value="monthly">Monthly</option>
+        </select><br><br>
+        <input type="submit" value="Subscribe">
+    </form>
+</body>
+</html>
