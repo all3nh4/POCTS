@@ -8,21 +8,17 @@ from faker import Faker
 from random import choice
 import sqlite3
 import os 
-import json 
-
+import json
 
 app = Flask(__name__)
-print("current directory: ", os.getcwd())
-
 
 # Configurations
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////Users/allenhafezipour/projects/TrendScope/Trendscope.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///Trendscope.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
 
 # Initialize extensions
 db = SQLAlchemy(app)
-print("db is set")
 migrate = Migrate(app, db)
 
 # Initialize Faker
@@ -44,7 +40,6 @@ def create_alert_subscription(email, trend_keyword, frequency):
         "trend_keyword": trend_keyword,
         "frequency": frequency
     }
-
 
 def save_alert_subscription(subscription):
     try:
@@ -109,13 +104,8 @@ def get_alerts_route():
     subscriptions = get_alert_subscriptions()
     return jsonify(subscriptions)
 
-
-def create_tables():
-     with app_context():
-        # Create tables using db.metadata.create_all()
-        db.metadata.create_all()
-        print("Tables created successfully!")
-   
 if __name__ == '__main__':
-    db.create_all()
+    with app.app_context():
+        db.create_all()  # Create tables
+        print("Tables were created successfully!")
     app.run(debug=True)
