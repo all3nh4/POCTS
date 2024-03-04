@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Market Trends</title>
+</head>
+<body>
+    <h1>
+        Market Trends 
+    </h1>
+    {% for trend in trends %}
+    <div class = "trend">
+        <h2>{{trend.name}}</h2>
+        <p>category :{{trend.category}} </p>
+        <p>Start date: {{trend.startDate}}</p>
+        <p>status {{trend.status}}</p>
+        <ul>
+            {% for source in trend.sources %}
+            <li><a href="{{source}}">{{source}}</a></li>
+            {% endfor %}
+        </ul>
+        <p>analysis {{trend.analysis}}</p>
+
+    </div>
+    {% endfor %}
+</body>
+</html>

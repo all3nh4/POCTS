@@ -16,6 +16,7 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///Trendscope.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
+app.config['SQLALCHEMY_ECHO'] = True
 
 # Initialize extensions
 db = SQLAlchemy(app)
@@ -34,6 +35,16 @@ class AlertSubscription(db.Model):
     trend_keyword = db.Column(db.String(120), nullable=False)
     frequency = db.Column(db.String(50), nullable=False)
 
+
+class MarketTrends(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(120))
+    category = db.Column(db.String(120)) 
+    startDate = db.Column(db.String(50))
+    status = db.Column(db.String(50))
+    sources = db.Column(db.String(500))
+    analysis = db.Column(db.Text)
+    
 def create_alert_subscription(email, trend_keyword, frequency):
     return {
         "email": email,
@@ -57,17 +68,25 @@ def save_alert_subscription(subscription):
 industries = ['Technology', 'Finance', 'Healthcare', 'Education', 'Entertainment']
 def fetch_market_trends():
     trends = []
-    for _ in range(10):  # Generate 10 dummy trends
-        trends.append({
-            "id": fake.random_int(min=1, max=100),
-            "name": fake.company(),
-            "category": choice(industries),
-            "startDate": str(fake.past_date()),
-            "status": choice(["Active", "Emerging", "Declining"]),
-            "sources": [fake.url() for _ in range(2)],
-            "analysis": fake.paragraph(nb_sentences=2),
-        })
-    return jsonify(trends)
+    for _ in range(2):
+        trend = MarketTrends(
+        name=fake.company(),
+        category=choice(industries),
+        startDate=str(fake.past_date()),
+        status=choice(["Active", "Emerging", "Declining"]),
+        sources=",".join([fake.url() for _ in range(2)]),
+        analysis=fake.paragraph(nb_sentences=2)
+        )
+        db.session.add(trend)
+        trends.append(trend)
+    try:
+        db.session.commit()
+        
+
+    except Exception as e:
+        print(f"error{e}")
+
+    return trends
 
 def setupAlerts():
     data = request.json
@@ -88,6 +107,7 @@ def subscribe():
 def get_market_trends_route():
     trends= fetch_market_trends()
     return render_template('market_trends.html', trends=trends)
+    #return trends
 
 @app.route('/setup-alert', methods=['POST'])
 def setup_alert():
